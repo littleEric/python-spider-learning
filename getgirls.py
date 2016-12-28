@@ -78,10 +78,14 @@ def read_pic(url):
     return urlopen(url).read()
 ##写二进制流
 def write_pic(filepath,binary_data):
-    file = open(filepath,"wb")
-    file.write(binary_data)
-    file.flush()
-    file.close()
+    if os.path.exists(filepath):
+        return 0
+    else:
+        file = open(filepath,"wb")
+        file.write(binary_data)
+        file.flush()
+        file.close()
+        return 1
 ##主程序
 def get_all_girls(entranceurl):
     linkas = get_linkas(entranceurl)
@@ -93,16 +97,22 @@ def get_all_girls(entranceurl):
             if linkbs == None:
                 print("===============could not open linka on function get_all_girls===============")
             else:
-                ##linkbs不为空，创建文件夹
-                currentpath = mkdir("/Volumes/100G(HDD)/mzitu/"+linkbs['title'])
-                if currentpath:
-                    for linkb in range(1,linkbs['max_value']+1):
-                        #print(linka+'/'+str(linkb))
-                        img_page_url = linka+'/'+str(linkb)
-                        #print(get_img_link(img_page_url))
-                        filepath = currentpath+'/'+ str(linkb) + '.jpg'
-                        if write_pic(filepath,read_pic(get_img_link(img_page_url))):
-                            print(filepath)
+                ##检测文件夹是否存在
+                currentpath = "/Volumes/100G(HDD)/mzitu/"+linkbs['title']
+                if os.path.exists(currentpath):
+                    print("==============" + currentpath + " existed==================")
+                    continue
+                    ##linkbs不为空，创建文件夹
+                mkdir(currentpath)
+                for linkb in range(1,linkbs['max_value']+1):
+                    #print(linka+'/'+str(linkb))
+                    img_page_url = linka+'/'+str(linkb)
+                    #print(get_img_link(img_page_url))
+                    filepath = currentpath+'/'+ str(linkb) + '.jpg'
+                    if write_pic(filepath,read_pic(get_img_link(img_page_url))):
+                        print(filepath)
+                    else:
+                        print("============"+filepath+" has existed============")
 ##运行主程序
 get_all_girls("http://www.mzitu.com/all")
 
