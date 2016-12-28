@@ -15,11 +15,12 @@ def get_linkas(url):
         ##找到存链接的div
         div_all = bsObj.find("div", {"class": "all"})
         ##找到存链接的ul
-        ul_archives = div_all.find("ul", {"class": "archives"})
-        ##获取所有a标签
-        a_tags = ul_archives.find_all("a", {"href": re.compile("http:\/\/www\.mzitu\.com\/\d+")})
-        for a_tag in a_tags:
-            href_list.append(a_tag["href"])
+        ul_archives = div_all.find_all("ul", {"class": "archives"})
+        for ul_archive in ul_archives:
+            ##获取所有a标签
+            a_tags = ul_archive.find_all("a", {"href": re.compile("http:\/\/www\.mzitu\.com\/\d+")})
+            for a_tag in a_tags:
+                href_list.append(a_tag["href"])
         return (href_list)
     except AttributeError as e:
         print(".............AttributeError on function get_linka..........")
