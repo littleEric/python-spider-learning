@@ -1,6 +1,7 @@
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
+from http.client import IncompleteRead
 import re,os
 
 def get_linkas(url):
@@ -78,9 +79,11 @@ def mkdir(path):
 def read_pic(url):
     try:
         data = urlopen(url).read()
-        return data
-    except HTTPError as e:
+    except HTTPError:
         return None
+    except IncompleteRead:
+        data = read_pic(url)
+    return data
 ##写二进制流
 def write_pic(filepath,binary_data):
     if os.path.exists(filepath) or binary_data == None:
