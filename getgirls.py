@@ -76,10 +76,14 @@ def mkdir(path):
         return path
 ##读取图片
 def read_pic(url):
-    return urlopen(url).read()
+    try:
+        data = urlopen(url).read()
+        return data
+    except HTTPError as e:
+        return None
 ##写二进制流
 def write_pic(filepath,binary_data):
-    if os.path.exists(filepath):
+    if os.path.exists(filepath) or binary_data == None:
         return 0
     else:
         file = open(filepath,"wb")
