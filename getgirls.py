@@ -1,14 +1,13 @@
-from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
-from http.client import IncompleteRead
-import re,os
+from requests.exceptions import ChunkedEncodingError
+import re,os,requests
 
 def get_linkas(url):
     ##储存主页链接
     href_list = list()
     try:
-        html = urlopen(url)
+        html = requests.get(url).text
         bsObj = BeautifulSoup(html,"lxml")
     except HTTPError as e:
         print(".............failed to open url on function get_linka..........")
@@ -30,7 +29,7 @@ def get_linkas(url):
 #####从每页中获取图片最大页数
 def get_linkbs(url):
     try:
-        html = urlopen(url)
+        html = requests.get(url).text
         bsObj = BeautifulSoup(html,"lxml")
     except HTTPError as e:
         print(".............failed to open url on function get_linkb..........")
@@ -54,7 +53,7 @@ def get_linkbs(url):
 ##从每页挖出图片
 def get_img_link(url):
     try:
-        html = urlopen(url)
+        html = requests.get(url).text
         bsObj = BeautifulSoup(html,"lxml")
     except HTTPError as e:
         print("=============could not found picture link in the page==================")
@@ -78,10 +77,10 @@ def mkdir(path):
 ##读取图片
 def read_pic(url):
     try:
-        data = urlopen(url).read()
+        data = requests.get(url).content
     except HTTPError:
         return None
-    except IncompleteRead:
+    except ChunkedEncodingError:
         data = read_pic(url)
     return data
 ##写二进制流
@@ -106,7 +105,7 @@ def get_all_girls(entranceurl):
                 print("===============could not open linka on function get_all_girls===============")
             else:
                 ##检测文件夹是否存在
-                currentpath = "/Volumes/100G(HDD)/mzitu/"+linkbs['title']
+                currentpath = "/Volumes/100G(HDD)/mzitu/"+linkbs['title'].strip().replace("/"," ")
                 if os.path.exists(currentpath):
                     print("==============" + currentpath + " existed==================")
                     continue
@@ -123,7 +122,8 @@ def get_all_girls(entranceurl):
                         print("============"+filepath+" has existed============")
 ##运行主程序
 get_all_girls("http://www.mzitu.com/all")
-
+#str = "张杨一纯/棚拍/海军帽白内衣"
+#print(str.strip().strip("\\").replace("/"," "))
 ##程序debug
 #print(get_linkbs("http://www.mzitu.com/82490"))
 #mkdir("/Volumes/100G(HDD)/mzitu/1")
